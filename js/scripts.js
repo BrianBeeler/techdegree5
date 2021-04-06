@@ -75,6 +75,7 @@ function checkStatus(response) {
 }
 
 modals = {};
+userData = []
 
 fetchData('https://randomuser.me/api/?results=12', 
     onSuccess = (data) => {
@@ -86,6 +87,7 @@ fetchData('https://randomuser.me/api/?results=12',
             modalHtml = createPopupHtmlForUser(user)
             modals[user.login.uuid] = modalHtml
         })
+        userData = data.results;
 
     }, 
     onFailure = () => {
@@ -110,7 +112,7 @@ let createPopupHtmlForUser = (user) => {
    return (
    `<div class="modal-container">
         <div class="modal">
-            <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+            <button type="button" id="modal-close-btn" class="modal-close-btn"><strong onclick='removeModel()'>X</strong></button>
             <div class="modal-info-container">
                 <img class="modal-img" src=${user.picture.large} alt="profile picture">
                 <h3 id="name" class="modal-name cap">${user.name.first} ${user.name.last}</h3>
@@ -125,8 +127,8 @@ let createPopupHtmlForUser = (user) => {
 
         // IMPORTANT: Below is only for exceeds tasks 
         <div class="modal-btn-container">
-            <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-            <button type="button" id="modal-next" class="modal-next btn">Next</button>
+            <button type="button" id="modal-prev" class="modal-prev btn" onclick="renderPrevModal('${user.login.uuid}')">Prev</button>
+            <button type="button" id="modal-next" class="modal-next btn" onclick="renderNextModal('${user.login.uuid}')">Next</button>
         </div>
     </div>`)
 }
@@ -141,4 +143,41 @@ function createPopup(uuid) {
     let userTemplate = modals[uuid];
     console.log("userTemplate", userTemplate);
     createAndAppendTo(userTemplate,'body');
+}
+
+function removeModel() {
+    let modal = document.querySelector('.modal-container');
+    modal.remove();
+}
+
+function renderPrevModal(uuid) {
+    console.log(userData)
+    let index = userData.findIndex((item) => {
+        return item.login.uuid === uuid
+    })
+
+    if (index === 0) {
+        index = userData.length-1;
+    } else{
+        index--;
+    }
+
+    removeModel()
+    createPopup(userData[index].login.uuid)
+}
+
+function renderNextModal(uuid) {
+    console.log("next rendering")
+    let index = userData.findIndex((item) => {
+        return item.login.uuid === uuid
+    })
+    if (index === (userData.length-1) ) {
+        index = 0
+    } else {
+        index++
+    }
+
+    removeModel()
+    createPopup(userData[index].login.uuid)
+
 }
