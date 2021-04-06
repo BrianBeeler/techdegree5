@@ -132,7 +132,10 @@ let createPopupHtmlForUser = (user) => {
 }
 
 function formatBirthday(birthday) {
-    return birthday;
+    let burthday = new Date(birthday)
+    
+
+    return `${burthday.getMonth()}/${burthday.getDate()}/${burthday.getYear()}`;
 }
 function createPopup(uuid) {
     let userTemplate = modals[uuid];
